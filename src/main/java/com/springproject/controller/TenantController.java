@@ -1,5 +1,6 @@
 package com.springproject.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class TenantController {
 
 	@Autowired
 	private TenantRepository tenantRepository;
-	
+
 	@Autowired
 	private TowerRepository towerRepository;
 
@@ -42,6 +43,13 @@ public class TenantController {
 		Tenant tenant = tenantRepository.findById(tenantId)
 				.orElseThrow(() -> new RNFException("Tenant not found for this id -" + tenantId));
 		return ResponseEntity.ok().body(tenant);
+	}
+
+	@GetMapping("owners/{ownerId}/vehicles")
+	public List<Tenant> getAllTenants(@PathVariable Long towerId) {
+		List<Tenant> tenants = new ArrayList<>();
+		this.tenantRepository.findByTowerId(towerId).forEach(tenants::add);
+		return tenants;
 	}
 
 	@PostMapping("/towers/{towerId}/tenants")
