@@ -45,7 +45,7 @@ public class TenantController {
 		return ResponseEntity.ok().body(tenant);
 	}
 
-	@GetMapping("owners/{ownerId}/vehicles")
+	@GetMapping("owners/{ownerId}/tenants")
 	public List<Tenant> getAllTenants(@PathVariable Long towerId) {
 		List<Tenant> tenants = new ArrayList<>();
 		this.tenantRepository.findByTowerId(towerId).forEach(tenants::add);
