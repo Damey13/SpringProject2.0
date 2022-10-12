@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springproject.exception.RNFException;
-import com.springproject.exception.RNFException;
+import com.springproject.model.Tenant;
 import com.springproject.model.Tower;
+import com.springproject.repository.TenantRepository;
 import com.springproject.repository.TowerRepository;
 
 @RestController
@@ -26,45 +27,52 @@ import com.springproject.repository.TowerRepository;
 public class TenantController {
 
 	@Autowired
+	private TenantRepository tenantRepository;
+	
+	@Autowired
 	private TowerRepository towerRepository;
 
-	@GetMapping("towers")
-	public List<Tower> getAlltower() {
-		return this.towerRepository.findAll();
+	@GetMapping("tenants")
+	public List<Tenant> getAlltenant() {
+		return this.tenantRepository.findAll();
 	}
 
-	@GetMapping("/towers/{id}")
-	public ResponseEntity<Tower> getTowerById(@PathVariable(value = "id") Long towerId)
+	@GetMapping("/towers/{towerId}/tenants/{id}")
+	public ResponseEntity<Tenant> getTenantById(@PathVariable(value = "id") Long tenantId) throws RNFException {
+		Tenant tenant = tenantRepository.findById(tenantId)
+				.orElseThrow(() -> new RNFException("Tenant not found for this id -" + tenantId));
+		return ResponseEntity.ok().body(tenant);
+	}
+
+	@PostMapping("/towers/{towerId}/tenants")
+	public Tenant createTenant(@RequestBody Tenant tenant, @PathVariable(value = "towerId") Long towerId)
 			throws RNFException {
 		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow(() -> new RNFException("Tower not found for this id ::" + towerId));
-		return ResponseEntity.ok().body(tower);
+				.orElseThrow(() -> new RNFException("Tower not found for this id :" + towerId));
+		Tenant tenantt = new Tenant();
+		tenantt.setTower(tower);
+		tenantt.setName(tenant.getName());
+		tenantt.setRent(tenant.getRent());
+		return this.tenantRepository.save(tenantt);
 	}
 
-	@PostMapping("towers")
-	public Tower createTower(@RequestBody Tower tower) {
-		return this.towerRepository.save(tower);
+	@PutMapping("tenants/{id}")
+	public ResponseEntity<Tenant> updateTenant(@PathVariable(value = "id") Long tenantId,
+			@Validated @RequestBody Tenant tenantDetails) throws RNFException {
+		Tenant tenant = tenantRepository.findById(tenantId)
+				.orElseThrow(() -> new RNFException("Tenant not found for this id - " + tenantId));
+		tenant.setRent(tenantDetails.getRent());
+		tenant.setName(tenantDetails.getName());
+		return ResponseEntity.ok(this.tenantRepository.save(tenant));
 	}
 
-	@PutMapping("towers/{id}")
-	public ResponseEntity<Tower> updateTower(@PathVariable(value = "id") Long towerId,
-			@Validated @RequestBody Tower towerDetails) throws RNFException {
-		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow(() -> new RNFException("Tower not found for this id - " + towerId));
-		tower.setEmail(towerDetails.getEmail());
-		tower.setFirstName(towerDetails.getFirstName());
-		tower.setLastName(towerDetails.getLastName());
-		return ResponseEntity.ok(this.towerRepository.save(tower));
-	}
-
-	@DeleteMapping ("towers/{id}")
-	public Map<String,Boolean> deleteTower(@PathVariable(value = "id") Long towerId) throws RNFException
-	{
-		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow (() -> new RNFException ("Tower not found for this id -:" + towerId));
-	this.towerRepository.delete(tower);
-	Map<String, Boolean> response = new HashMap<>();
-	response.put("deleted", Boolean.TRUE);
-	return response;
+	@DeleteMapping("tenants/{id}")
+	public Map<String, Boolean> deleteTenant(@PathVariable(value = "id") Long tenantId) throws RNFException {
+		Tenant tenant = tenantRepository.findById(tenantId)
+				.orElseThrow(() -> new RNFException("Tenant not found for this id -" + tenantId));
+		this.tenantRepository.delete(tenant);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return response;
 	}
 }

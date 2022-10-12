@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springproject.exception.RNFException;
-import com.springproject.exception.RNFException;
 import com.springproject.model.Tower;
 import com.springproject.repository.TowerRepository;
 
@@ -28,7 +27,7 @@ public class TowerController {
 	@Autowired
 	private TowerRepository towerRepository;
 
-	@GetMapping("towers")
+	@GetMapping("/towers")
 	public List<Tower> getAlltower() {
 		return this.towerRepository.findAll();
 	}
@@ -37,11 +36,11 @@ public class TowerController {
 	public ResponseEntity<Tower> getTowerById(@PathVariable(value = "id") Long towerId)
 			throws RNFException {
 		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow(() -> new RNFException("Tower not found for this id ::" + towerId));
+				.orElseThrow(() -> new RNFException("Tower not found for this id -" + towerId));
 		return ResponseEntity.ok().body(tower);
 	}
 
-	@PostMapping("towers")
+	@PostMapping("/towers")
 	public Tower createTower(@RequestBody Tower tower) {
 		return this.towerRepository.save(tower);
 	}
@@ -51,9 +50,7 @@ public class TowerController {
 			@Validated @RequestBody Tower towerDetails) throws RNFException {
 		Tower tower = towerRepository.findById(towerId)
 				.orElseThrow(() -> new RNFException("Tower not found for this id - " + towerId));
-		tower.setEmail(towerDetails.getEmail());
-		tower.setFirstName(towerDetails.getFirstName());
-		tower.setLastName(towerDetails.getLastName());
+		tower.setName(towerDetails.getName());
 		return ResponseEntity.ok(this.towerRepository.save(tower));
 	}
 
