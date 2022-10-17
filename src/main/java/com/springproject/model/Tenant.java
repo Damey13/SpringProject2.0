@@ -16,7 +16,7 @@ public class Tenant {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@JsonIgnore
 	@ManyToOne
@@ -36,11 +36,11 @@ public class Tenant {
 	@Column(name = "rent")
 	private Long rent;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -60,7 +60,7 @@ public class Tenant {
 		this.rent = rent;
 	}
 
-	public Tenant(long id, String name, Long rent,Long towerId) {
+	public Tenant(Long id, String name, Long rent,Long towerId) {
 		super();
 		this.id = id;
 		this.name = name;

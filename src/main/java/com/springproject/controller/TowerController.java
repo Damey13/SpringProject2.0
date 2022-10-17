@@ -1,6 +1,5 @@
 package com.springproject.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,52 +15,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springproject.dto.TowerDto;
 import com.springproject.exception.RNFException;
-import com.springproject.model.Tower;
-import com.springproject.repository.TowerRepository;
+import com.springproject.service.TowerService;
 
 @RestController
 @RequestMapping()
 public class TowerController {
 
+	
 	@Autowired
-	private TowerRepository towerRepository;
+	private TowerService towerService;
 
 	@GetMapping("/towers")
-	public List<Tower> getAlltower() {
-		return this.towerRepository.findAll();
+	public List<TowerDto> getAlltower() {
+		return this.towerService.getAlltower();
 	}
 
 	@GetMapping("/towers/{id}")
-	public ResponseEntity<Tower> getTowerById(@PathVariable(value = "id") Long towerId)
+	public ResponseEntity<TowerDto> getTowerById(@PathVariable(value = "id") Long towerId)
 			throws RNFException {
-		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow(() -> new RNFException("Tower not found for this id -" + towerId));
-		return ResponseEntity.ok().body(tower);
+		return this.towerService.getTowerById(towerId);
 	}
 
 	@PostMapping("/towers")
-	public Tower createTower(@RequestBody Tower tower) {
-		return this.towerRepository.save(tower);
+	public TowerDto createTower(@RequestBody TowerDto tower) {
+		return this.towerService.createTower(tower);
 	}
 
 	@PutMapping("towers/{id}")
-	public ResponseEntity<Tower> updateTower(@PathVariable(value = "id") Long towerId,
-			@Validated @RequestBody Tower towerDetails) throws RNFException {
-		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow(() -> new RNFException("Tower not found for this id - " + towerId));
-		tower.setName(towerDetails.getName());
-		return ResponseEntity.ok(this.towerRepository.save(tower));
+	public ResponseEntity<TowerDto> updateTower(@PathVariable(value = "id") Long towerId,
+			@Validated @RequestBody TowerDto towerDetails) throws RNFException {
+		return this.towerService.updateTower(towerId,towerDetails);
+		
 	}
 
 	@DeleteMapping ("towers/{id}")
 	public Map<String,Boolean> deleteTower(@PathVariable(value = "id") Long towerId) throws RNFException
 	{
-		Tower tower = towerRepository.findById(towerId)
-				.orElseThrow (() -> new RNFException ("Tower not found for this id -:" + towerId));
-	this.towerRepository.delete(tower);
-	Map<String, Boolean> response = new HashMap<>();
-	response.put("deleted", Boolean.TRUE);
-	return response;
+		return this.towerService.deleteTower(towerId);
+
 	}
 }

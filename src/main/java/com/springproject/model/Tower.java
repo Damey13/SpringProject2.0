@@ -20,7 +20,7 @@ public class Tower {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Column(name = "name")
 	private String name;
@@ -29,11 +29,11 @@ public class Tower {
 	@OneToMany(fetch=FetchType.EAGER,mappedBy="tower")
 	private List<Tenant> tenants=new ArrayList<>();
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -45,7 +45,7 @@ public class Tower {
 		this.name = name;
 	}
 
-	public Tower(long id, String name) {
+	public Tower(Long id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
